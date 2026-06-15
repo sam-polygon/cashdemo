@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cash App × Polygon — Interactive Demo</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g: #00C244;
+  --g2: #1DB954;
+  --poly: #7B3FE4;
+  --bg: #000;
+  --card: #1C1C1E;
+  --card2: #2C2C2E;
+  --card3: #3A3A3C;
+  --txt: #fff;
+  --txt2: #8E8E93;
+  --txt3: #636366;
+  --line: rgba(255,255,255,0.08);
+  --ob: #111;
+  --ot: #ccc;
+  --om: #555;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-font-smoothing:antialiased;}
+body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',Arial,sans-serif;background:var(--ob);color:var(--ot);line-height:1.4;}
+
+/* topbar */
+.tb{background:#0d0d0d;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 44px;height:52px;display:flex;align-items:center;justify-content:space-between;}
+.tb-t{font-size:14px;font-weight:600;color:var(--ot);letter-spacing:-0.2px;}
+.tb-s{font-size:10px;color:var(--om);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* page */
+.page{max-width:1240px;margin:0 auto;padding:48px 44px 80px;}
+.grid{display:grid;grid-template-columns:300px 1fr;gap:64px;align-items:start;}
+
+/* phone */
+.pcol{position:sticky;top:32px;}
+.pshell{width:282px;background:#1a1a1a;border-radius:48px;padding:10px;margin:0 auto;box-shadow:0 0 0 1px rgba(255,255,255,0.06),0 40px 80px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.08);}
+.pscr{background:#000;border-radius:40px;overflow:hidden;aspect-ratio:390/844;position:relative;display:flex;flex-direction:column;}
+.pnotch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:96px;height:24px;background:#1a1a1a;border-radius:12px;z-index:20;}
+.pstat{display:flex;justify-content:space-between;padding:14px 20px 2px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);position:relative;z-index:5;flex-shrink:0;}
+.pbody{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+
+/* dots */
+.dots{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:14px 4px 0;}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all 0.2s;flex-shrink:0;}
+.dot.active{background:var(--g);transform:scale(1.3);}
+.dot.done{background:rgba(0,194,68,0.4);}
+
+/* narrative */
+.narr{padding-top:2px;}
+.stag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:5px 13px 5px 8px;border-radius:100px;font-size:11px;font-weight:600;color:var(--om);letter-spacing:0.3px;margin-bottom:18px;text-transform:uppercase;}
+.stagd{width:7px;height:7px;border-radius:50%;background:var(--g);}
+.narr h1{font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.8px;line-height:1.12;margin-bottom:14px;}
+.narr h1 em{font-style:normal;color:var(--g);}
+.narr h1 .pe{font-style:normal;color:#A78BFA;}
+.nbody{font-size:14px;color:#999;line-height:1.65;margin-bottom:22px;max-width:500px;}
+.nbody strong{color:#ddd;font-weight:600;}
+.nbody em{font-style:normal;color:var(--g);font-weight:600;}
+
+/* poly card */
+.pc{background:rgba(123,63,228,0.06);border:1px solid rgba(123,63,228,0.18);border-radius:12px;padding:14px 16px;margin-bottom:20px;max-width:500px;}
+.pcl{font-size:9px;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:1.8px;margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.phx{width:15px;height:15px;background:var(--poly);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;font-weight:800;}
+.pct{font-size:12.5px;color:#C4B5FD;line-height:1.55;}
+.pct strong{color:#DDD6FE;font-weight:600;}
+
+/* bullets */
+.bul{list-style:none;max-width:500px;}
+.bul li{font-size:12.5px;color:#888;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:flex-start;gap:9px;line-height:1.5;}
+.bul li:last-child{border-bottom:none;}
+.bul li::before{content:'→';color:var(--g);font-weight:700;flex-shrink:0;margin-top:1px;font-size:11px;}
+.bul li strong{color:#ccc;font-weight:600;}
+
+/* controls */
+.ctrls{display:flex;justify-content:space-between;align-items:center;margin-top:28px;max-width:500px;}
+.cb{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;color:#ddd;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.cb:hover:not(:disabled){background:rgba(255,255,255,0.09);}
+.cb.p{background:var(--g);color:#000;border-color:var(--g);}
+.cb.p:hover:not(:disabled){background:#00a83a;}
+.cb:disabled{opacity:0.25;cursor:not-allowed;}
+.creset{background:none;border:none;color:var(--om);font-size:12px;cursor:pointer;font-family:inherit;}
+
+/* ── PHONE UI COMPONENTS ── */
+.s{background:#000;flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* The real home screen — matches images 10/11 exactly */
+.home-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.home-topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 18px 8px;flex-shrink:0;}
+.hta-left{width:36px;height:36px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:17px;}
+.hta-right{display:flex;gap:8px;}
+.hta-btn{width:36px;height:36px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:15px;}
+.home-card-strip{background:var(--card);border-radius:14px;padding:10px 14px;margin:0 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.hcs-left{display:flex;align-items:center;gap:8px;}
+.hcs-card-icon{font-size:12px;color:var(--txt2);}
+.hcs-num{font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;}
+.hcs-tag{font-size:13px;color:var(--txt2);font-weight:500;}
+.home-bal-area{padding:4px 18px 12px;flex-shrink:0;}
+.hba-label{font-size:14px;font-weight:600;color:var(--txt);display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.hba-label .ch{color:var(--txt2);font-size:13px;}
+.hba-eye{margin-left:auto;font-size:17px;color:var(--txt2);}
+.hba-amt{font-size:52px;font-weight:800;color:#fff;letter-spacing:-2.5px;line-height:1;}
+.home-actions{display:flex;gap:10px;padding:0 18px 10px;flex-shrink:0;}
+.ha-btn{flex:1;background:var(--card);border-radius:100px;padding:13px;text-align:center;font-size:15px;font-weight:700;color:white;}
+.home-scroll{flex:1;overflow-y:auto;padding:0 16px 8px;}
+.home-scroll::-webkit-scrollbar{display:none;}
+
+/* stacked feature cards (like savings, bitcoin in image 11) */
+.hfc{background:var(--card);border-radius:16px;padding:14px 16px;margin-bottom:8px;}
+.hfc-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
+.hfc-name{font-size:14px;font-weight:600;color:var(--txt);}
+.hfc-right-icon{width:34px;height:34px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.hfc-amt{font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.8px;margin:2px 0;}
+.hfc-sub{font-size:12px;color:var(--txt2);}
+
+/* green status bar */
+.hfc-green{background:var(--card);border-radius:16px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.hfc-green-left{display:flex;align-items:center;gap:10px;}
+.hfc-green-icon{width:18px;height:18px;background:var(--g);border-radius:4px;}
+.hfc-green-name{font-size:14px;font-weight:600;color:var(--txt);}
+.hfc-green-right{font-size:13px;color:var(--txt2);font-weight:500;}
+
+/* bottom nav — real Cash App: balance pill + $ + clock */
+.bnav{background:rgba(0,0,0,0.95);border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;padding:8px 20px 14px;flex-shrink:0;gap:0;}
+.bnt{flex:1;display:flex;justify-content:center;}
+.bnt-pill{background:var(--card2);border-radius:100px;padding:7px 14px;font-size:13px;font-weight:700;color:#fff;display:inline-flex;align-items:center;justify-content:center;}
+.bnt-pill.active{background:var(--card3);}
+.bnt-icon{font-size:20px;color:var(--txt2);}
+.bnt-icon.active{color:#fff;}
+
+/* ── PAY SCREEN — exact green + black sheet ── */
+.pay-bg{background:#1a5c2a;flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.pay-bg-inner{background:var(--g);flex:1;display:flex;flex-direction:column;}
+.pay-topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 16px 8px;flex-shrink:0;}
+.pay-smiley{width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;font-size:15px;}
+.pay-icons{display:flex;gap:8px;}
+.pay-icon-btn{width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.pay-amt{flex:1;display:flex;align-items:center;justify-content:center;font-size:72px;font-weight:900;color:#000;letter-spacing:-4px;line-height:1;}
+.pay-numpad{display:grid;grid-template-columns:repeat(3,1fr);padding:0 16px;flex-shrink:0;}
+.pay-key{height:52px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:400;color:rgba(0,0,0,0.75);}
+.pay-btns{display:flex;gap:10px;padding:8px 16px 4px;flex-shrink:0;}
+.pay-sec{flex:1;background:rgba(0,0,0,0.12);border-radius:100px;padding:11px;text-align:center;font-size:14px;font-weight:700;color:rgba(0,0,0,0.75);}
+.pay-main{background:#000;border-radius:100px;padding:14px;text-align:center;font-size:16px;font-weight:700;color:var(--g);margin:4px 16px 8px;flex-shrink:0;}
+
+/* pay-to black sheet that slides up */
+.pay-sheet{background:#111;border-radius:20px 20px 0 0;flex-shrink:0;padding:0 20px 12px;}
+.psh-handle{width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:8px auto 14px;}
+.psh-close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(255,255,255,0.7);margin-bottom:12px;}
+.psh-title{font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.8px;margin-bottom:14px;line-height:1.1;}
+.psh-title .dim{color:var(--txt2);font-weight:400;}
+.psh-search{background:var(--card);border-radius:12px;padding:11px 14px;font-size:14px;color:var(--txt2);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+
+/* send confirm sheet */
+.send-sheet{background:#111;border-radius:20px 20px 0 0;flex-shrink:0;padding:0 20px 16px;}
+.ss-back{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-top:4px;}
+.ss-back-btn{font-size:22px;color:#fff;}
+.ss-title{font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.8px;line-height:1.2;margin-bottom:16px;}
+.ss-title .dim{color:var(--txt2);font-weight:400;}
+.ss-addr{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.ss-addr-icon{width:36px;height:36px;border-radius:50%;background:var(--poly);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ss-addr-txt{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
+.ss-coin{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.ss-coin-icon{width:36px;height:36px;border-radius:50%;background:#2775CA;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ss-coin-txt{font-size:22px;font-weight:800;color:#fff;}
+.ss-detail{font-size:14px;color:#fff;margin-bottom:6px;}
+.ss-detail span{color:var(--txt2);}
+.ss-bal{background:var(--card);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px;}
+.ss-bal-left{display:flex;align-items:center;gap:10px;}
+.ss-bal-icon{width:28px;height:28px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#000;}
+.ss-bal-txt{font-size:15px;font-weight:600;color:#fff;}
+.ss-bal-val{font-size:15px;color:var(--txt2);}
+.ss-bal-chev{font-size:14px;color:var(--txt2);}
+.ss-disclaimer{font-size:11px;color:var(--txt2);text-align:center;margin-bottom:10px;}
+.ss-disclaimer a{color:var(--txt2);text-decoration:underline;}
+.ss-send{background:#fff;border-radius:100px;padding:15px;text-align:center;font-size:16px;font-weight:700;color:#000;}
+
+/* network select sheet */
+.net-sheet{background:#111;border-radius:20px 20px 0 0;flex-shrink:0;padding:0 20px 16px;}
+.net-title{font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.8px;margin-bottom:16px;}
+.net-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.net-item:last-child{border-bottom:none;}
+.net-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.net-name{font-size:16px;font-weight:600;color:#fff;}
+.net-addr{font-size:12px;color:var(--txt2);margin-top:1px;font-family:'DM Mono',monospace;}
+
+/* deposit USDC QR screen */
+.qr-screen{background:#000;flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.qr-topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 18px 12px;flex-shrink:0;}
+.qr-close{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(255,255,255,0.7);}
+.qr-title{font-size:16px;font-weight:700;color:#fff;}
+.qr-help{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(255,255,255,0.7);}
+.qr-box{background:#fff;border-radius:16px;margin:0 20px 14px;padding:16px;position:relative;flex-shrink:0;}
+.qr-svg{width:100%;aspect-ratio:1;position:relative;}
+.qr-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.qr-grid{display:grid;grid-template-columns:repeat(20,1fr);gap:1.5px;width:100%;}
+.qr-cell{aspect-ratio:1;border-radius:1px;}
+.qr-caption{font-size:14px;color:rgba(255,255,255,0.85);text-align:center;margin-bottom:12px;flex-shrink:0;}
+.qr-network{background:var(--card);border-radius:100px;padding:7px 16px;display:inline-flex;align-items:center;gap:6px;margin:0 auto 14px;font-size:13px;font-weight:700;color:#fff;display:flex;justify-content:center;flex-shrink:0;}
+.qr-warning{font-size:10px;color:var(--txt2);text-align:center;line-height:1.5;padding:0 20px 12px;flex-shrink:0;}
+.qr-btns{display:flex;gap:12px;padding:0 20px 12px;flex-shrink:0;}
+.qr-btn{flex:1;background:#fff;border-radius:100px;padding:13px;text-align:center;font-size:15px;font-weight:600;color:#000;}
+
+/* add money screen */
+.addmoney-bg{background:#000;flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.am-topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 18px 6px;flex-shrink:0;}
+.am-topbar-inner{flex:1;display:flex;align-items:center;justify-content:space-between;}
+.am-bal-area{padding:4px 18px 10px;flex-shrink:0;}
+.am-list-section{padding:8px 18px 0;flex:1;overflow-y:auto;}
+.am-section-hdr{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-bottom:12px;}
+.am-row{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.am-row:last-child{border-bottom:none;}
+.am-row.highlight{background:rgba(0,194,68,0.06);border-radius:12px;padding:13px 10px;margin:0 -10px 6px;}
+.am-left{display:flex;align-items:center;gap:14px;}
+.am-icon{font-size:20px;width:24px;text-align:center;flex-shrink:0;}
+.am-icon.poly-icon{color:var(--poly);}
+.am-name{font-size:16px;font-weight:500;color:#fff;}
+.am-name.poly{color:var(--g);font-weight:600;}
+.am-chev{font-size:16px;color:var(--txt2);}
+
+/* add money sheet (from image 10) */
+.am-sheet{background:#111;border-radius:20px 20px 0 0;flex-shrink:0;padding:0 16px 14px;}
+.am-sheet-handle{width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:8px auto 12px;}
+.am-sheet-title{font-size:22px;font-weight:800;color:#fff;text-align:center;letter-spacing:-0.5px;margin-bottom:4px;}
+.am-sheet-sub{font-size:13px;color:var(--txt2);text-align:center;margin-bottom:14px;}
+.am-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.am-amt{background:var(--card);border-radius:14px;padding:16px;text-align:center;font-size:17px;font-weight:700;color:#fff;}
+.am-from{background:var(--card);border-radius:14px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.am-from-left{display:flex;align-items:center;gap:10px;}
+.am-from-card{width:36px;height:24px;background:linear-gradient(135deg,#c8102e,#c8102e);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:white;}
+.am-from-txt{font-size:14px;font-weight:500;color:#fff;}
+.am-from-chev{font-size:14px;color:var(--txt2);}
+.am-add-btn{background:var(--card2);border-radius:100px;padding:14px;text-align:center;font-size:16px;font-weight:700;color:var(--txt2);}
+.am-add-btn.green{background:var(--g);color:#000;}
+
+/* withdrawal / confirm screen */
+.wd-screen{background:#000;flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.wd-close{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,0.7);margin:10px 18px 20px;}
+.wd-check{width:52px;height:52px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#000;margin:0 18px 16px;}
+.wd-title{font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.8px;margin:0 18px 8px;}
+.wd-sub{font-size:16px;color:var(--txt2);margin:0 18px;flex:1;}
+.wd-done{background:#fff;border-radius:100px;padding:15px;text-align:center;font-size:16px;font-weight:700;color:#000;margin:0 16px 14px;}
+
+/* savings screen */
+.savings-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.sw-hdr{display:flex;align-items:center;padding:8px 18px 12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sw-back{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,0.7);}
+.sw-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:#fff;margin-right:32px;}
+.sw-body{flex:1;overflow-y:auto;padding:14px 18px;}
+.sw-body::-webkit-scrollbar{display:none;}
+.sw-badge{background:rgba(0,194,68,0.15);border-radius:100px;padding:5px 12px;display:inline-block;font-size:12px;font-weight:700;color:var(--g);margin-bottom:10px;}
+.sw-rate{font-size:48px;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:4px;}
+.sw-lbl{font-size:14px;color:var(--txt2);margin-bottom:6px;}
+.sw-earned{font-size:13px;color:var(--g);font-weight:600;margin-bottom:12px;}
+.sw-progress{height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin-bottom:4px;overflow:hidden;}
+.sw-prog-fill{height:100%;border-radius:2px;background:var(--g);}
+.sw-prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:14px;}
+.sw-card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:10px;}
+.sw-stat-row{display:flex;gap:10px;margin-bottom:10px;}
+.sw-stat{flex:1;background:var(--card);border-radius:12px;padding:12px;}
+.sw-stat-l{font-size:11px;color:var(--txt2);margin-bottom:3px;}
+.sw-stat-v{font-size:16px;font-weight:700;color:#fff;}
+.sw-stat-v.g{color:var(--g);}
+
+/* borrow screen */
+.borrow-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.bw-hdr{display:flex;align-items:center;padding:8px 18px 12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.bw-back{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,0.7);}
+.bw-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:#fff;margin-right:32px;}
+.bw-body{flex:1;overflow-y:auto;padding:16px 18px;}
+.bw-body::-webkit-scrollbar{display:none;}
+.bw-card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;}
+.bw-lbl{font-size:13px;color:var(--txt2);margin-bottom:6px;}
+.bw-amt{font-size:42px;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:4px;}
+.bw-sub{font-size:12px;color:var(--txt2);}
+.bw-slider-track{height:4px;background:rgba(255,255,255,0.1);border-radius:2px;position:relative;margin:14px 0 4px;}
+.bw-slider-fill{height:100%;width:55%;background:var(--g);border-radius:2px;}
+.bw-slider-thumb{width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:-8px;left:55%;transform:translateX(-50%);box-shadow:0 2px 8px rgba(0,0,0,0.5);}
+.bw-range{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);}
+.bw-detail{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px;}
+.bw-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.bw-row:last-child{border-bottom:none;}
+.bw-rl{color:var(--txt2);}
+.bw-rv{color:#fff;font-weight:600;}
+.bw-rv.g{color:var(--g);}
+.bw-cta{background:var(--g);border-radius:100px;padding:15px;text-align:center;font-size:16px;font-weight:700;color:#000;}
+
+/* virtual account */
+.va-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.va-hdr{display:flex;align-items:center;padding:8px 18px 12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.va-back{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,0.7);}
+.va-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:#fff;margin-right:32px;}
+.va-body{flex:1;overflow-y:auto;padding:14px 18px;}
+.va-card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:10px;}
+.va-flag{font-size:20px;margin-bottom:10px;display:block;}
+.va-field{margin-bottom:12px;}
+.va-fl{font-size:11px;color:var(--txt2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+.va-fv{font-size:16px;font-weight:700;color:#fff;font-family:'DM Mono',monospace;}
+.va-chips{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.va-chip{background:rgba(0,194,68,0.12);border:1px solid rgba(0,194,68,0.22);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--g);}
+.va-note{background:rgba(0,194,68,0.06);border:1px solid rgba(0,194,68,0.15);border-radius:12px;padding:12px;font-size:12px;color:rgba(0,194,68,0.75);line-height:1.5;margin-top:6px;}
+
+/* card screen */
+.card-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.card-hdr{display:flex;align-items:center;padding:8px 18px 12px;flex-shrink:0;}
+.card-close{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,0.7);}
+.card-body{flex:1;overflow-y:auto;padding:0 18px 14px;}
+.card-visual{background:linear-gradient(135deg,#1a5c30,#0d3d1e);border-radius:18px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden;}
+.cv-chip{font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:14px;}
+.cv-num{font-family:'DM Mono',monospace;font-size:15px;color:#fff;letter-spacing:2px;margin-bottom:14px;}
+.cv-foot{display:flex;justify-content:space-between;align-items:flex-end;}
+.cv-name{font-size:11px;font-weight:600;color:#fff;}
+.cv-issuer{font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;}
+.cv-net{font-size:20px;font-weight:800;color:#fff;}
+.card-headline{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-bottom:8px;}
+.card-sub{font-size:13px;color:var(--txt2);margin-bottom:14px;line-height:1.5;}
+.card-detail{background:var(--card);border-radius:14px;padding:0 14px;margin-bottom:12px;}
+.cd-row{display:flex;justify-content:space-between;padding:12px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.cd-row:last-child{border-bottom:none;}
+.cd-l{color:var(--txt2);}
+.cd-v{color:#fff;font-weight:600;}
+.cd-v.g{color:var(--g);}
+.card-cta{background:#fff;border-radius:100px;padding:15px;text-align:center;font-size:16px;font-weight:700;color:#000;}
+
+/* security */
+.sec-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.sec-hdr{display:flex;align-items:center;padding:8px 18px 12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sec-back{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,0.7);}
+.sec-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:#fff;margin-right:32px;}
+.sec-body{flex:1;overflow-y:auto;padding:4px 18px;}
+.sec-item{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sec-item:last-child{border-bottom:none;}
+.sec-icon{font-size:18px;width:22px;text-align:center;flex-shrink:0;margin-top:1px;}
+.sec-body-tx{flex:1;}
+.sec-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:2px;}
+.sec-desc{font-size:12px;color:var(--txt2);line-height:1.4;}
+.sec-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.sec-val{font-size:14px;color:var(--txt2);}
+.sec-chev{color:var(--txt2);font-size:13px;}
+.sec-change{background:var(--card2);border-radius:100px;padding:6px 14px;font-size:13px;font-weight:600;color:#fff;}
+.sec-section-title{font-size:20px;font-weight:800;color:#fff;margin:12px 0 4px;letter-spacing:-0.5px;}
+.sec-section-sub{font-size:13px;color:var(--txt2);margin-bottom:8px;line-height:1.4;}
+
+/* MMF */
+.mmf-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.mmf-hdr{display:flex;align-items:center;padding:8px 18px 12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.mmf-back{width:32px;height:32px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,0.7);}
+.mmf-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:#fff;margin-right:32px;}
+.mmf-body{flex:1;overflow-y:auto;padding:14px 18px;}
+.mmf-card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;}
+.mmf-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.mmf-logo{width:38px;height:38px;background:#1E3A8A;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;}
+.mmf-name{font-size:15px;font-weight:700;color:#fff;}
+.mmf-desc{font-size:12px;color:var(--txt2);margin-top:1px;}
+.mmf-rate{font-size:48px;font-weight:800;color:#93C5FD;letter-spacing:-2px;line-height:1;margin-bottom:3px;}
+.mmf-rate-lbl{font-size:13px;color:var(--txt2);}
+.mmf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.mmf-stat{background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;}
+.mmf-sl{font-size:10px;color:var(--txt2);}
+.mmf-sv{font-size:13px;font-weight:700;color:#fff;margin-top:2px;}
+.mmf-position{background:var(--card);border-radius:14px;padding:0 14px;margin-bottom:12px;}
+.mmf-row{display:flex;justify-content:space-between;padding:12px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.mmf-row:last-child{border-bottom:none;}
+.mmf-rl{color:var(--txt2);}
+.mmf-rv{color:#fff;font-weight:600;}
+.mmf-rv.g{color:var(--g);}
+.mmf-cta{background:var(--g);border-radius:100px;padding:15px;text-align:center;font-size:16px;font-weight:700;color:#000;}
+
+/* invest list */
+.inv-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.inv-topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 18px 8px;flex-shrink:0;}
+.inv-scroll{flex:1;overflow-y:auto;padding:0 18px;}
+.inv-scroll::-webkit-scrollbar{display:none;}
+.inv-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.inv-item:last-child{border-bottom:none;}
+.inv-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.inv-name{font-size:15px;font-weight:600;color:#fff;}
+.inv-sub{font-size:12px;color:var(--txt2);margin-top:1px;}
+.inv-right{margin-left:auto;text-align:right;}
+.inv-rate{font-size:15px;font-weight:700;color:var(--g);}
+.inv-start{background:var(--card2);border-radius:100px;padding:7px 18px;font-size:13px;font-weight:600;color:#fff;margin-left:10px;white-space:nowrap;}
+.inv-start.act{background:rgba(0,194,68,0.2);color:var(--g);}
+
+/* recap */
+.recap-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.recap-topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 18px 8px;flex-shrink:0;}
+.recap-body{flex:1;overflow-y:auto;padding:14px 18px;}
+.rc-check{width:56px;height:56px;border-radius:50%;background:var(--poly);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin-bottom:10px;}
+.rc-title{font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.8px;margin-bottom:4px;}
+.rc-sub{font-size:14px;color:var(--txt2);margin-bottom:16px;}
+.rc-list{background:var(--card);border-radius:16px;padding:0 14px;}
+.rc-row{display:flex;justify-content:space-between;padding:11px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.rc-row:last-child{border-bottom:none;}
+.rc-l{color:var(--txt2);}
+.rc-v{color:var(--g);font-weight:600;}
+.rc-v.dim{color:var(--txt2);}
+
+/* process steps */
+.proc-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.proc-hdr{padding:8px 18px 12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.proc-title{font-size:16px;font-weight:700;color:#fff;text-align:center;}
+.proc-body{flex:1;overflow-y:auto;padding:16px 18px;}
+.proc-sub{font-size:13px;color:var(--txt2);margin-bottom:16px;text-align:center;}
+.psteps{display:flex;flex-direction:column;gap:12px;}
+.pstep{display:flex;gap:10px;align-items:flex-start;opacity:0.25;transition:opacity 0.3s;}
+.pstep.active{opacity:1;}
+.pstep.done{opacity:1;}
+.ps-dot{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;}
+.pstep.active .ps-dot{background:var(--poly);animation:spulse 1.4s infinite;}
+.pstep.done .ps-dot{background:var(--g);}
+.ps-inner{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.2);}
+.pstep.active .ps-inner{background:#fff;}
+.pstep.done .ps-inner{background:transparent;position:relative;width:10px;height:10px;border-radius:0;}
+.pstep.done .ps-inner::after{content:'';position:absolute;width:4px;height:7px;border:solid white;border-width:0 2px 2px 0;top:-1px;left:2px;transform:rotate(45deg);}
+@keyframes spulse{0%,100%{box-shadow:0 0 0 0 rgba(123,63,228,0.4);}50%{box-shadow:0 0 0 6px rgba(123,63,228,0);}}
+.ps-name{font-size:13px;font-weight:700;color:#fff;}
+.ps-det{font-size:11px;color:var(--txt2);margin-top:2px;line-height:1.4;}
+.proc-note{background:rgba(0,194,68,0.06);border:1px solid rgba(0,194,68,0.15);border-radius:12px;padding:12px;font-size:12px;color:rgba(0,194,68,0.75);line-height:1.5;margin-top:14px;}
+
+/* auth screen */
+.auth-wrap{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+.auth-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.auth-logo{width:64px;height:64px;background:var(--g);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:#000;margin-bottom:20px;}
+.auth-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-0.5px;}
+.auth-sub{font-size:13px;color:var(--txt2);margin-bottom:28px;text-align:center;}
+.auth-btn{background:var(--card);border-radius:14px;padding:13px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;width:100%;}
+.auth-btn.highlight{border:1.5px solid rgba(0,194,68,0.3);}
+.auth-btn-ic{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.auth-btn-tx{font-size:14px;font-weight:600;color:#fff;flex:1;}
+.auth-btn-arr{color:var(--txt2);}
+.auth-div{text-align:center;font-size:12px;color:var(--txt2);margin:6px 0;}
+
+/* footer */
+.pfooter{padding:36px 44px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;font-size:11px;color:var(--om);}
+.pfooter strong{color:rgba(255,255,255,0.35);}
+
+@media(max-width:900px){.grid{grid-template-columns:1fr;}.pcol{position:static;margin-bottom:32px;}.page{padding:36px 20px 60px;}.tb{padding:0 20px;}.narr h1{font-size:24px;}.pfooter{padding:28px 20px;}}
+</style>
+</head>
+<body>
+
+<div class="tb">
+  <span class="tb-t">Cash App × Polygon</span>
+  <span class="tb-s">Confidential · Jun 2026</span>
+</div>
+
+<div class="page">
+<div class="grid">
+  <div class="pcol">
+    <div class="pshell">
+      <div class="pscr">
+        <div class="pnotch"></div>
+        <div class="pstat"><span>9:41</span><span>▌▌ 100%</span></div>
+        <div class="pbody" id="pbody"></div>
+      </div>
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+  <div class="narr">
+    <div class="stag" id="stag"><span class="stagd"></span><span id="stagx"></span></div>
+    <h1 id="stitle"></h1>
+    <div class="nbody" id="nbody"></div>
+    <div class="pc"><div class="pcl"><div class="phx">⬡</div><span id="plbl"></span></div><div class="pct" id="ptxt"></div></div>
+    <ul class="bul" id="sbul"></ul>
+    <div class="ctrls">
+      <button class="cb" id="pbtn">← Previous</button>
+      <button class="creset" id="rbtn">↻ Reset</button>
+      <button class="cb p" id="nbtn">Next →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="pfooter">Prepared by <strong>Polygon Labs</strong> for Cash App / Block · CONFIDENTIAL · V3.0 · JUN 2026</div>
+
+<script>
+let cur=0;
+
+// QR grid generator — makes a realistic-looking QR pattern
+function qrGrid(){
+  const cells=[];
+  const corners=[[0,0],[0,14],[14,0]]; // corner positions (simplified)
+  for(let r=0;r<20;r++){
+    for(let c=0;c<20;c++){
+      const isCorn=(r<5&&c<5)||(r<5&&c>14)||(r>14&&c<5);
+      const isBorder=(r===0||r===19||c===0||c===19);
+      const rand=Math.random()>0.5;
+      const on=isCorn||rand;
+      cells.push(`<div class="qr-cell" style="background:${on?'#000':'transparent'};"></div>`);
+    }
+  }
+  return cells.join('');
+}
+
+// ── SCREENS ───────────────────────────────────────────────────
+const SCR={
+
+home:()=>`
+<div class="home-wrap">
+  <div class="home-topbar">
+    <div class="hta-left">😊</div>
+    <div class="hta-right">
+      <div class="hta-btn">🔍</div>
+      <div class="hta-btn" style="background:linear-gradient(135deg,#444,#666);border:2px solid rgba(255,255,255,0.2);font-size:13px;font-weight:700;color:white;">A</div>
+    </div>
+  </div>
+  <div class="home-card-strip">
+    <div class="hcs-left"><span class="hcs-card-icon">▣</span><span class="hcs-num">•• 9516</span></div>
+    <div class="hcs-tag">$aaronjohnson</div>
+  </div>
+  <div class="home-bal-area">
+    <div class="hba-label">Cash balance •• 9516 <span class="ch">›</span> <span class="hba-eye">◎</span></div>
+    <div class="hba-amt">$247.50</div>
+  </div>
+  <div class="home-actions">
+    <div class="ha-btn">Add money</div>
+    <div class="ha-btn">Withdraw</div>
+  </div>
+  <div class="home-scroll">
+    <div class="hfc-green"><div class="hfc-green-left"><div class="hfc-green-icon"></div><div class="hfc-green-name">Cash App Green</div></div><div class="hfc-green-right">Earn status</div></div>
+    <div class="hfc">
+      <div class="hfc-row1"><div class="hfc-name">Savings</div><div class="hfc-right-icon" style="background:rgba(0,194,68,0.15);">💰</div></div>
+      <div class="hfc-amt">$0.00</div>
+      <div class="hfc-sub">Up to 4.2% APY</div>
+    </div>
+    <div class="hfc">
+      <div class="hfc-row1"><div class="hfc-name">Bitcoin</div><div class="hfc-right-icon" style="font-size:16px;">₿</div></div>
+      <div class="hfc-amt">$0.00</div>
+      <div class="hfc-sub">0% today</div>
+    </div>
+    <div class="hfc">
+      <div class="hfc-row1"><div class="hfc-name">USDC</div><div class="hfc-right-icon" style="background:#2775CA;color:white;font-size:11px;font-weight:800;">$</div></div>
+      <div class="hfc-amt">$247.50</div>
+      <div class="hfc-sub">Stablecoin-backed · Polygon</div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bnt"><div class="bnt-pill active">$247</div></div>
+    <div class="bnt"><div class="bnt-icon">$</div></div>
+    <div class="bnt"><div class="bnt-icon">⏱</div></div>
+  </div>
+</div>`,
+
+auth:()=>`
+<div class="auth-wrap">
+  <div class="auth-body">
+    <div class="auth-logo">$</div>
+    <div class="auth-title">Sign in to Cash App</div>
+    <div class="auth-sub">Secured by Polygon wallet infrastructure</div>
+    <div style="width:100%;">
+      <div class="auth-btn"><div class="auth-btn-ic" style="background:#fff;">🍎</div><div class="auth-btn-tx">Continue with Apple</div><div class="auth-btn-arr">›</div></div>
+      <div class="auth-btn highlight"><div class="auth-btn-ic" style="background:#4285F4;color:white;font-size:13px;font-weight:800;">G</div><div class="auth-btn-tx">Continue with Google</div><div class="auth-btn-arr">›</div></div>
+      <div class="auth-btn"><div class="auth-btn-ic" style="background:var(--card2);">📧</div><div class="auth-btn-tx">Continue with Email</div><div class="auth-btn-arr">›</div></div>
+      <div class="auth-btn"><div class="auth-btn-ic" style="background:var(--card2);">🔑</div><div class="auth-btn-tx">Use Passkey</div><div class="auth-btn-arr">›</div></div>
+    </div>
+    <div class="auth-div">or any OIDC provider</div>
+    <div style="background:rgba(123,63,228,0.07);border:1px solid rgba(123,63,228,0.18);border-radius:10px;padding:10px 12px;font-size:11px;color:#C4B5FD;line-height:1.5;margin-top:8px;width:100%;">Your wallet provisions automatically — no seed phrase. Hardware-secured key management.</div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$247</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+auth_done:()=>`
+<div class="home-wrap">
+  <div class="home-topbar"><div class="hta-left">😊</div><div class="hta-right"><div class="hta-btn">🔍</div><div class="hta-btn" style="background:linear-gradient(135deg,#444,#666);border:2px solid rgba(255,255,255,0.2);font-size:13px;font-weight:700;color:white;">A</div></div></div>
+  <div class="home-bal-area" style="padding-top:14px;">
+    <div class="hba-label">Cash balance •• 9516 <span class="ch">›</span> <span class="hba-eye">◎</span></div>
+    <div class="hba-amt">$247.50</div>
+  </div>
+  <div class="home-actions"><div class="ha-btn">Add money</div><div class="ha-btn">Withdraw</div></div>
+  <div class="home-scroll">
+    <div style="background:var(--card);border-radius:16px;padding:14px;margin-bottom:8px;">
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:10px;">Wallet active</div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);"><span style="color:var(--txt2);">Signed in with</span><span style="color:#fff;font-weight:600;">Google</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);"><span style="color:var(--txt2);">Wallet</span><span style="color:#fff;font-weight:600;font-family:'DM Mono',monospace;font-size:11px;">0x1ecf…554d</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);"><span style="color:var(--txt2);">Key security</span><span style="color:#fff;font-weight:600;">Nitro Enclave 2-of-2</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);"><span style="color:var(--txt2);">Gas</span><span style="color:var(--g);font-weight:600;">Sponsored</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;"><span style="color:var(--txt2);">Recovery</span><span style="color:#fff;font-weight:600;">30-day timelock</span></div>
+    </div>
+    <div style="background:rgba(0,194,68,0.06);border:1px solid rgba(0,194,68,0.15);border-radius:12px;padding:12px;font-size:12px;color:rgba(0,194,68,0.75);line-height:1.5;">Self-custodial. Cash App holds zero keys.</div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$247</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+add_money:()=>`
+<div class="addmoney-bg">
+  <div class="am-topbar">
+    <div class="am-topbar-inner">
+      <div style="font-size:13px;color:var(--txt2);">Taxes · Pay $0 to file</div>
+      <div style="background:var(--card2);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:600;color:#fff;">Start</div>
+    </div>
+  </div>
+  <div class="am-list-section">
+    <div class="am-section-hdr">Add money</div>
+    <div class="am-row"><div class="am-left"><div class="am-icon">📥</div><div class="am-name">Direct deposit</div></div><div class="am-chev">›</div></div>
+    <div class="am-row"><div class="am-left"><div class="am-icon">↔️</div><div class="am-name">Get bank or wire transfer</div></div><div class="am-chev">›</div></div>
+    <div class="am-row"><div class="am-left"><div class="am-icon">📄</div><div class="am-name">Deposit paper money</div></div><div class="am-chev">›</div></div>
+    <div class="am-row"><div class="am-left"><div class="am-icon">📷</div><div class="am-name">Deposit check</div></div><div class="am-chev">›</div></div>
+    <div class="am-row"><div class="am-left"><div class="am-icon">🔄</div><div class="am-name">Auto reload</div></div><div class="am-chev">›</div></div>
+    <div class="am-row highlight"><div class="am-left"><div class="am-icon poly-icon">⊞</div><div class="am-name poly">Deposit USDC</div></div><div class="am-chev" style="color:var(--g);">›</div></div>
+  </div>
+  <div class="bnav">
+    <div class="bnt"><div class="bnt-pill active">$247</div></div>
+    <div class="bnt"><div class="bnt-icon">$</div></div>
+    <div class="bnt"><div class="bnt-icon">⏱</div></div>
+  </div>
+</div>`,
+
+deposit_usdc:()=>`
+<div class="qr-screen">
+  <div class="qr-topbar">
+    <div class="qr-close">×</div>
+    <div class="qr-title">Receive USDC</div>
+    <div class="qr-help">?</div>
+  </div>
+  <div class="qr-box">
+    <div style="width:100%;aspect-ratio:1;background:white;border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative;">
+      <div style="display:grid;grid-template-columns:repeat(20,1fr);gap:1.5px;width:100%;height:100%;padding:4px;">${qrGrid()}</div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <div style="width:24px;height:24px;background:var(--poly);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:white;">⬡</div>
+      </div>
+    </div>
+  </div>
+  <div class="qr-caption">Scan to pay $aaronjohnson in USDC</div>
+  <div style="display:flex;justify-content:center;margin-bottom:10px;">
+    <div style="background:var(--card2);border-radius:100px;padding:7px 16px;font-size:13px;font-weight:700;color:#fff;display:inline-flex;align-items:center;gap:6px;">
+      <div style="width:16px;height:16px;background:var(--poly);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:white;font-weight:800;">⬡</div>
+      Polygon ∨
+    </div>
+  </div>
+  <div class="qr-warning">Use this address for receiving USDC exclusively over the Polygon payment network. Sending on an unsupported network will result in permanent loss of funds.</div>
+  <div class="qr-btns">
+    <div class="qr-btn">Copy</div>
+    <div class="qr-btn">Share</div>
+  </div>
+</div>`,
+
+select_network:()=>`
+<div class="s" style="background:#1a1a1a;">
+  <div style="flex:1;overflow:hidden;position:relative;">
+    <div style="background:rgba(0,0,0,0.5);padding:14px 18px 10px;">
+      <div style="font-size:13px;color:rgba(255,255,255,0.3);">Taxes · Pay $0 to file</div>
+    </div>
+    <div style="padding:10px 18px;opacity:0.4;">
+      <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:12px;">Add money</div>
+      <div style="color:var(--txt2);font-size:15px;margin-bottom:10px;">Direct deposit ›</div>
+      <div style="color:var(--txt2);font-size:15px;">Get bank or wire transfer ›</div>
+    </div>
+  </div>
+  <div class="net-sheet">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:8px auto 14px;"></div>
+    <div class="net-title">Select payment network</div>
+    <div class="net-item">
+      <div class="net-icon" style="background:linear-gradient(135deg,#9945FF,#14F195);">◈</div>
+      <div><div class="net-name">Solana</div><div class="net-addr">bUBHfv...cNon</div></div>
+    </div>
+    <div class="net-item">
+      <div class="net-icon" style="background:#627EEA;"><span style="font-size:22px;">⬡</span></div>
+      <div><div class="net-name">Ethereum</div><div class="net-addr">0x762a...5053</div></div>
+    </div>
+    <div class="net-item" style="background:rgba(123,63,228,0.08);border-radius:12px;padding:12px 10px;margin:0 -10px;">
+      <div class="net-icon" style="background:var(--poly);"><span style="font-size:14px;font-weight:800;color:white;">⬡</span></div>
+      <div><div class="net-name" style="color:var(--g);">Polygon</div><div class="net-addr">0x762a...5053</div></div>
+    </div>
+    <div class="net-item">
+      <div class="net-icon" style="background:#1B4AEF;">◈</div>
+      <div><div class="net-name">Arbitrum</div><div class="net-addr">0x762a...5053</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--txt2);text-align:center;margin-top:8px;line-height:1.5;">Ensure you're selecting the correct payment network. Sending on an unsupported network will result in permanent loss of funds.</div>
+  </div>
+</div>`,
+
+add_money_sheet:()=>`
+<div class="addmoney-bg">
+  <div style="padding:6px 18px 4px;flex-shrink:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div class="hta-left">😊</div>
+      <div class="hta-right"><div class="hta-btn">🔍</div><div class="hta-btn" style="background:linear-gradient(135deg,#444,#666);font-size:13px;font-weight:700;color:white;border:2px solid rgba(255,255,255,0.2);">A</div></div>
+    </div>
+  </div>
+  <div style="padding:4px 18px;flex-shrink:0;">
+    <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.5);margin-bottom:2px;">Cash balance •• 9516 ›</div>
+    <div style="font-size:38px;font-weight:800;color:rgba(255,255,255,0.4);letter-spacing:-1.5px;">$247.50</div>
+  </div>
+  <div style="display:flex;gap:10px;padding:6px 18px 10px;flex-shrink:0;">
+    <div class="ha-btn" style="border:1.5px solid rgba(0,194,68,0.4);color:var(--g);">Add money</div>
+    <div class="ha-btn">Withdraw</div>
+  </div>
+  <div class="am-sheet">
+    <div class="am-sheet-handle"></div>
+    <div class="am-sheet-title">Add money</div>
+    <div class="am-sheet-sub">Cash balance $247.50</div>
+    <div class="am-grid">
+      <div class="am-amt">$10</div><div class="am-amt">$25</div><div class="am-amt">$50</div>
+      <div class="am-amt">$100</div><div class="am-amt">$200</div><div class="am-amt">···</div>
+    </div>
+    <div class="am-from">
+      <div class="am-from-left"><div class="am-from-card">VISA</div><div class="am-from-txt">Bank of America debit 4366</div></div>
+      <div class="am-from-chev">›</div>
+    </div>
+    <div class="am-add-btn">Add</div>
+  </div>
+</div>`,
+
+pay_screen:()=>`
+<div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+  <div class="pay-bg-inner" style="flex:1;display:flex;flex-direction:column;">
+    <div class="pay-topbar">
+      <div class="pay-smiley">😊</div>
+      <div class="pay-icons">
+        <div class="pay-icon-btn">⊞</div>
+        <div class="pay-icon-btn">🔍</div>
+        <div class="pay-icon-btn" style="background:linear-gradient(135deg,#444,#666);font-size:11px;font-weight:800;color:white;">A</div>
+      </div>
+    </div>
+    <div class="pay-amt">$250</div>
+    <div class="pay-numpad">
+      ${[1,2,3,4,5,6,7,8,9,'.',0,'⌫'].map(k=>`<div class="pay-key">${k}</div>`).join('')}
+    </div>
+    <div class="pay-btns"><div class="pay-sec">Pool</div><div class="pay-sec">Request</div></div>
+    <div class="pay-main">Pay</div>
+    <div class="bnav" style="background:rgba(0,150,50,0.3);">
+      <div class="bnt"><div class="bnt-icon" style="color:rgba(0,0,0,0.4);">⌂</div></div>
+      <div class="bnt"><div class="bnt-pill" style="background:rgba(0,0,0,0.2);color:#000;">$</div></div>
+      <div class="bnt"><div class="bnt-icon" style="color:rgba(0,0,0,0.4);">⏱</div></div>
+    </div>
+  </div>
+</div>`,
+
+pay_to:()=>`
+<div style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--g);">
+  <div class="pay-topbar">
+    <div class="pay-smiley">😊</div>
+    <div class="pay-icons"><div class="pay-icon-btn">⊞</div><div class="pay-icon-btn">🔍</div><div class="pay-icon-btn" style="font-size:11px;font-weight:800;color:white;">A</div></div>
+  </div>
+  <div style="font-size:56px;font-weight:900;color:#000;text-align:center;letter-spacing:-3px;padding:8px 0 12px;">$250</div>
+  <div class="pay-btns"><div class="pay-sec">Pool</div><div class="pay-sec">Request</div></div>
+  <div class="pay-sheet">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:8px auto 10px;"></div>
+    <div class="psh-close">×</div>
+    <div class="psh-title">Pay $250 <span class="dim">to</span></div>
+    <div class="psh-search"><span style="font-size:15px;">🔍</span><span style="font-size:13px;color:var(--txt2);">Name, $cashtag, email, phone</span></div>
+  </div>
+</div>`,
+
+send_confirm:()=>`
+<div style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--g);">
+  <div class="pay-topbar">
+    <div class="pay-smiley">😊</div>
+    <div class="pay-icons"><div class="pay-icon-btn">⊞</div><div class="pay-icon-btn">🔍</div><div class="pay-icon-btn" style="font-size:11px;font-weight:800;color:white;">A</div></div>
+  </div>
+  <div style="font-size:56px;font-weight:900;color:rgba(0,0,0,0.7);text-align:center;letter-spacing:-3px;padding:4px 0 4px;">$250</div>
+  <div class="send-sheet">
+    <div class="ss-back"><div class="ss-back-btn">←</div></div>
+    <div class="ss-title">Pay $250 <span class="dim">to</span></div>
+    <div class="ss-addr">
+      <div class="ss-addr-icon"><span style="font-size:14px;font-weight:800;color:white;">⬡</span></div>
+      <div class="ss-addr-txt">0x52d6...42e2</div><div style="font-size:20px;font-weight:400;color:var(--txt2);margin-left:4px;">in</div>
+    </div>
+    <div class="ss-coin">
+      <div class="ss-coin-icon"><span style="font-size:16px;font-weight:800;color:white;">$</span></div>
+      <div class="ss-coin-txt">USDC</div>
+    </div>
+    <div class="ss-detail"><span style="font-weight:700;">Transaction type:</span> <span style="color:var(--txt2);">USDC on Polygon</span></div>
+    <div class="ss-detail"><span style="font-weight:700;">Exchange rate:</span> <span style="color:var(--txt2);">1 USD : 1 USDC</span></div>
+    <div class="ss-detail"><span style="font-weight:700;">Total amount:</span> <span style="color:var(--txt2);">$250</span></div>
+    <div class="ss-bal">
+      <div class="ss-bal-left"><div class="ss-bal-icon">$</div><div class="ss-bal-txt">Cash balance</div><div class="ss-bal-val" style="margin-left:6px;">$247.50</div></div>
+      <div class="ss-bal-chev">∨</div>
+    </div>
+    <div class="ss-disclaimer">Payments can't be reversed. <a>Learn more</a></div>
+    <div class="ss-send">Send</div>
+  </div>
+</div>`,
+
+withdrawal_done:()=>`
+<div class="wd-screen">
+  <div class="wd-close">×</div>
+  <div class="wd-check">✓</div>
+  <div class="wd-title">Stablecoin Payment Sent</div>
+  <div class="wd-sub">You paid $250. Settled on Polygon in &lt;3 seconds.</div>
+  <div style="flex:1;"></div>
+  <div class="wd-done">Done</div>
+</div>`,
+
+bridge:()=>`
+<div class="proc-wrap">
+  <div class="proc-hdr"><div class="proc-title">Cross-chain deposit</div></div>
+  <div class="proc-body">
+    <div class="proc-sub">Aaron sends 200 USDT from <strong style="color:#FF3B30;">Tron</strong>. Arrives as $200 on Polygon.</div>
+    <div class="psteps" id="bridge-steps">
+      <div class="pstep"><div class="ps-dot"><div class="ps-inner"></div></div><div><div class="ps-name">200 USDT on Tron detected</div><div class="ps-det">Trails intent address · TRC-20</div></div></div>
+      <div class="pstep"><div class="ps-dot"><div class="ps-inner"></div></div><div><div class="ps-name">Routing Tron to Polygon</div><div class="ps-det">Trails best-route bridge</div></div></div>
+      <div class="pstep"><div class="ps-dot"><div class="ps-inner"></div></div><div><div class="ps-name">USDT lands on Polygon</div><div class="ps-det">Self-custodial wallet · ERC-20</div></div></div>
+      <div class="pstep"><div class="ps-dot"><div class="ps-inner"></div></div><div><div class="ps-name">Balance credited · $200</div><div class="ps-det">OMS webhook · instant</div></div></div>
+    </div>
+    <div class="proc-note">Aaron sees: "Deposit received $200". No chain. No bridge. No gas.</div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$247</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+yield_home:()=>`
+<div class="home-wrap">
+  <div class="home-topbar"><div class="hta-left">😊</div><div class="hta-right"><div class="hta-btn">🔍</div><div class="hta-btn" style="background:linear-gradient(135deg,#444,#666);font-size:13px;font-weight:700;color:white;border:2px solid rgba(255,255,255,0.2);">A</div></div></div>
+  <div class="home-bal-area">
+    <div class="hba-label">Cash balance •• 9516 <span class="ch">›</span> <span class="hba-eye">◎</span></div>
+    <div class="hba-amt">$747.50</div>
+  </div>
+  <div class="home-actions"><div class="ha-btn">Add money</div><div class="ha-btn">Withdraw</div></div>
+  <div class="home-scroll">
+    <div class="hfc" style="border:1.5px solid rgba(0,194,68,0.3);">
+      <div class="hfc-row1"><div class="hfc-name">Savings</div><div class="hfc-right-icon" style="background:rgba(0,194,68,0.15);"><span style="color:var(--g);font-size:16px;">$</span></div></div>
+      <div class="hfc-amt">$0.00</div>
+      <div class="hfc-sub" style="color:var(--g);">Up to 4.2% APY · tap Start to enable</div>
+      <div style="background:var(--g);border-radius:100px;padding:8px;text-align:center;font-size:14px;font-weight:700;color:#000;margin-top:10px;">Start</div>
+    </div>
+    <div class="hfc">
+      <div class="hfc-row1"><div class="hfc-name">Bitcoin</div><div class="hfc-right-icon">₿</div></div>
+      <div class="hfc-amt">$0.00</div>
+      <div class="hfc-sub">0% today</div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$747</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+yield:()=>`
+<div class="savings-wrap">
+  <div class="sw-hdr"><div class="sw-back">‹</div><div class="sw-title">Savings</div></div>
+  <div class="sw-body">
+    <div class="sw-badge">HIGH YIELD SAVINGS</div>
+    <div class="sw-rate">4.2%</div>
+    <div class="sw-lbl">APY · USDC via Morpho on Polygon</div>
+    <div class="sw-earned">+$52.08 earned this year</div>
+    <div class="sw-progress"><div class="sw-prog-fill" style="width:62%;"></div></div>
+    <div class="sw-prog-labels"><span>$1,240.00 saved</span><span>Goal: $2,000</span></div>
+    <div class="sw-stat-row">
+      <div class="sw-stat"><div class="sw-stat-l">Daily earnings</div><div class="sw-stat-v g">~$0.143</div></div>
+      <div class="sw-stat"><div class="sw-stat-l">Lock-up</div><div class="sw-stat-v">None</div></div>
+    </div>
+    <div style="background:rgba(0,194,68,0.06);border:1px solid rgba(0,194,68,0.15);border-radius:12px;padding:12px;font-size:12px;color:rgba(0,194,68,0.75);line-height:1.5;">Auto-compound via Morpho enterprise-grade lending markets. Withdraw anytime.</div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$747</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+invest_home:()=>`
+<div class="inv-wrap">
+  <div class="inv-topbar"><div style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px;">Invest</div><div style="display:flex;gap:8px;"><div class="hta-btn">🔍</div><div class="hta-btn" style="background:linear-gradient(135deg,#444,#666);font-size:13px;font-weight:700;color:white;border:2px solid rgba(255,255,255,0.2);">A</div></div></div>
+  <div class="inv-scroll">
+    <div class="inv-item">
+      <div class="inv-icon" style="background:#F7931A;font-size:22px;">₿</div>
+      <div><div class="inv-name">Bitcoin</div><div class="inv-sub">Learn and invest</div></div>
+      <div class="inv-start">Start</div>
+    </div>
+    <div class="inv-item">
+      <div class="inv-icon" style="background:var(--card2);">📊</div>
+      <div><div class="inv-name">Stocks</div><div class="inv-sub">Invest with $1</div></div>
+      <div class="inv-start">Start</div>
+    </div>
+    <div class="inv-item" style="background:rgba(59,130,246,0.06);border-radius:12px;padding:12px 8px;margin:0 -8px;">
+      <div class="inv-icon" style="background:#1E3A8A;font-size:16px;font-weight:800;color:#fff;">B</div>
+      <div><div class="inv-name">Buy MMF</div><div class="inv-sub" style="color:#93C5FD;">5.0% APY · BlackRock BUIDL</div></div>
+      <div class="inv-start act">Start</div>
+    </div>
+    <div class="inv-item">
+      <div class="inv-icon" style="background:var(--card2);">👨‍👩‍👧</div>
+      <div><div class="inv-name">Family</div><div class="inv-sub">Money tools for next gen</div></div>
+      <div class="inv-start">Start</div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$747</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+buidl:()=>`
+<div class="mmf-wrap">
+  <div class="mmf-hdr"><div class="mmf-back">‹</div><div class="mmf-title">Invest</div></div>
+  <div class="mmf-body">
+    <div class="mmf-card">
+      <div class="mmf-logo-row"><div class="mmf-logo">B</div><div><div class="mmf-name">BlackRock BUIDL</div><div class="mmf-desc">USD Institutional Digital Liquidity</div></div></div>
+      <div class="mmf-rate">5.0%</div>
+      <div class="mmf-rate-lbl">7-day yield · on Polygon</div>
+      <div class="mmf-stats">
+        <div class="mmf-stat"><div class="mmf-sl">Min</div><div class="mmf-sv">$1.00</div></div>
+        <div class="mmf-stat"><div class="mmf-sl">Backed by</div><div class="mmf-sv">T-Bills</div></div>
+        <div class="mmf-stat"><div class="mmf-sl">Liquidity</div><div class="mmf-sv">Daily</div></div>
+      </div>
+    </div>
+    <div class="mmf-position">
+      <div class="mmf-row"><span class="mmf-rl">Your position</span><span class="mmf-rv">500 BUIDL ≈ $500</span></div>
+      <div class="mmf-row"><span class="mmf-rl">Accrued yield</span><span class="mmf-rv g">+$6.85 this month</span></div>
+      <div class="mmf-row"><span class="mmf-rl">Redeem to</span><span class="mmf-rv">Cash balance · anytime</span></div>
+    </div>
+    <div class="mmf-cta">Buy BUIDL</div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$747</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+loan:()=>`
+<div class="borrow-wrap">
+  <div class="bw-hdr"><div class="bw-back">‹</div><div class="bw-title">Borrow</div></div>
+  <div class="bw-body">
+    <div class="bw-card">
+      <div class="bw-lbl">How much do you need?</div>
+      <div class="bw-amt">$300.00</div>
+      <div class="bw-sub">Against your $500 USDC savings</div>
+      <div class="bw-slider-track"><div class="bw-slider-fill"></div><div class="bw-slider-thumb"></div></div>
+      <div class="bw-range"><span>$50</span><span>$500</span></div>
+    </div>
+    <div class="bw-detail">
+      <div class="bw-row"><span class="bw-rl">Collateral ratio</span><span class="bw-rv">60%</span></div>
+      <div class="bw-row"><span class="bw-rl">Interest rate</span><span class="bw-rv">6.8% APR · variable</span></div>
+      <div class="bw-row"><span class="bw-rl">Repayment</span><span class="bw-rv">Flexible</span></div>
+      <div class="bw-row"><span class="bw-rl">Credit check</span><span class="bw-rv g">None required</span></div>
+    </div>
+    <div class="bw-cta">Borrow $300</div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$747</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+virt_account:()=>`
+<div class="va-wrap">
+  <div class="va-hdr"><div class="va-back">‹</div><div class="va-title">Virtual Account</div></div>
+  <div class="va-body">
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Your dedicated bank details</div>
+    <div class="va-card">
+      <span class="va-flag">🇺🇸</span>
+      <div class="va-field"><div class="va-fl">Account number</div><div class="va-fv">•••• •••• 4291</div></div>
+      <div class="va-field"><div class="va-fl">Routing number</div><div class="va-fv">021 000 089</div></div>
+      <div class="va-chips"><div class="va-chip">ACH</div><div class="va-chip">Fedwire</div><div class="va-chip">SWIFT</div><div class="va-chip">RTP</div></div>
+    </div>
+    <div class="va-note">Inflows auto-convert to USDC on Polygon and credit your Cash App balance.</div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$747</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+card:()=>`
+<div class="card-wrap">
+  <div class="card-hdr"><div class="card-close">×</div></div>
+  <div class="card-body">
+    <div class="card-visual">
+      <div class="cv-chip">CASH APP · STABLECOIN CARD</div>
+      <div class="cv-num">•••• •••• •••• 4291</div>
+      <div class="cv-foot"><div><div class="cv-name">Aaron Johnson</div><div class="cv-issuer">Issued by third party card issuer</div></div><div class="cv-net">VISA</div></div>
+    </div>
+    <div class="card-headline">No hidden fees, all kinds of exclusive perks</div>
+    <div class="card-sub">Spend USDC anywhere Visa is accepted. Earn yield on your balance between spend and settlement.</div>
+    <div class="card-detail">
+      <div class="cd-row"><span class="cd-l">Balance</span><span class="cd-v">$747.50 USDC</span></div>
+      <div class="cd-row"><span class="cd-l">Daily limit</span><span class="cd-v">$500 · contract enforced</span></div>
+      <div class="cd-row"><span class="cd-l">Yield while idle</span><span class="cd-v g">4.2% APY</span></div>
+      <div class="cd-row"><span class="cd-l">Issuance</span><span class="cd-v">Third party partner</span></div>
+    </div>
+    <div class="card-cta">Get your free card</div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$747</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+security:()=>`
+<div class="sec-wrap">
+  <div class="sec-hdr"><div class="sec-back">‹</div><div class="sec-title">Security</div></div>
+  <div class="sec-body">
+    <div class="sec-item">
+      <div class="sec-icon">⊡</div>
+      <div class="sec-body-tx"><div class="sec-name">Security lock</div><div class="sec-desc">Require Face ID or a PIN to move money or unlock the app.</div></div>
+      <div class="sec-right"><div class="sec-val">On</div><div class="sec-chev">›</div></div>
+    </div>
+    <div class="sec-item">
+      <div class="sec-icon">✳</div>
+      <div class="sec-body-tx"><div class="sec-name">Cash App PIN</div><div class="sec-desc">Your PIN is used to help protect your account.</div></div>
+      <div class="sec-right"><div class="sec-change">Change</div></div>
+    </div>
+    <div class="sec-item">
+      <div class="sec-icon">🔑</div>
+      <div class="sec-body-tx"><div class="sec-name">Passkeys</div><div class="sec-desc">Sign in with biometrics — no password needed.</div></div>
+      <div class="sec-right"><div class="sec-chev">›</div></div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:8px 0;"></div>
+    <div class="sec-section-title">Wallet protection</div>
+    <div class="sec-section-sub">Your self-custodial wallet uses hardware-secured key management. Cash App holds zero keys.</div>
+    <div class="sec-item">
+      <div class="sec-icon">🔐</div>
+      <div class="sec-body-tx"><div class="sec-name">Sign-in method</div><div class="sec-desc">Google Account</div></div>
+      <div class="sec-right"><div class="sec-chev">›</div></div>
+    </div>
+    <div class="sec-item">
+      <div class="sec-icon">🛡</div>
+      <div class="sec-body-tx"><div class="sec-name">Account recovery</div><div class="sec-desc">Set up · 30-day timelock active</div></div>
+      <div class="sec-right"><div class="sec-chev">›</div></div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$747</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`,
+
+recap:()=>`
+<div class="recap-wrap">
+  <div class="recap-topbar"><div style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px;">Money</div><div style="display:flex;gap:8px;"><div class="hta-btn">🔍</div><div class="hta-btn" style="background:linear-gradient(135deg,#444,#666);font-size:13px;font-weight:700;color:white;border:2px solid rgba(255,255,255,0.2);">A</div></div></div>
+  <div class="recap-body">
+    <div class="rc-check">⬡</div>
+    <div class="rc-title">Polygon OMS</div>
+    <div class="rc-sub">Single API · every service</div>
+    <div class="rc-list">
+      <div class="rc-row"><span class="rc-l">Auth</span><span class="rc-v">Sequence Wallets ✓</span></div>
+      <div class="rc-row"><span class="rc-l">Top Up + Ramps</span><span class="rc-v">OMS + Trails ✓</span></div>
+      <div class="rc-row"><span class="rc-l">Send P2P</span><span class="rc-v">Wallets + Paymaster ✓</span></div>
+      <div class="rc-row"><span class="rc-l">Bridge</span><span class="rc-v">Trails ✓</span></div>
+      <div class="rc-row"><span class="rc-l">Yield + Loan</span><span class="rc-v">Morpho ✓</span></div>
+      <div class="rc-row"><span class="rc-l">Invest e.g. MMF</span><span class="rc-v">RWA Settlement ✓</span></div>
+      <div class="rc-row"><span class="rc-l">Virtual Accts</span><span class="rc-v">OMS + CRB ✓</span></div>
+      <div class="rc-row"><span class="rc-l">Key Mgmt</span><span class="rc-v">Sequence ✓</span></div>
+      <div class="rc-row"><span class="rc-l">Debit Card</span><span class="rc-v dim">Third party partner</span></div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnt"><div class="bnt-pill active">$747</div></div><div class="bnt"><div class="bnt-icon">$</div></div><div class="bnt"><div class="bnt-icon">⏱</div></div></div>
+</div>`
+
+};
+
+// ── STEPS ─────────────────────────────────────────────────────
+const STEPS=[
+{tag:'01 · Home Screen',title:'Cash App,<br>rebuilt on <em>stables.</em>',body:`Aaron opens Cash App. Dollar balance. Dollar UX. The stablecoin infrastructure is completely invisible - exactly like today's Cash App, except the majority of services from auth to yield can run on Polygon's Open Money Stack.`,plbl:'Polygon Layer · All 9 services below',ptxt:`<strong>Auth, top-up, send, bridge, yield, invest e.g. MMF, loans, virtual accounts, key management</strong> - all Polygon OMS. Only the debit card (third party partner) sits outside the stack. One API.`,bul:['<strong>$247.50</strong> shown as a dollar balance - USDC card shown as a stablecoin feature','Savings, Bitcoin, USDC stacked as feature cards - same pattern as today','Add money and Withdraw buttons unchanged from today\'s UI'],scr:'home'},
+{tag:'02 · Authentication',title:'Sign in like<br>any web2 app.<br><em>Self-custodial underneath.</em>',body:`No seed phrases. No private key management. Aaron signs in with Google - his self-custodial Polygon wallet provisions silently. The web3 infrastructure is invisible at sign-in.`,plbl:'Polygon Layer · Sequence Embedded Wallets',ptxt:`<strong>2-of-2 multisig smart contract wallet</strong> per user. Both keys in separate AWS Nitro Enclaves. Neither key is ever exposed to Sequence, Cash App, or the user. Third party independently audits.`,bul:['Google, Apple, email, passkey, or any OIDC provider - user chooses','Wallet provisioned silently at first sign-in - zero onboarding friction','<strong>30-day timelock</strong> for recovery if auth method is lost','Cash App support holds zero keys - cannot be compelled to unlock'],scr:'auth'},
+{tag:'02 · Authentication',title:'Signed in.<br><em>Wallet ready.</em>',body:`Aaron signed in with Google. His self-custodial Polygon wallet is provisioned and ready. Cash App home screen - same as before, but with genuine self-custody under the hood.`,plbl:'Polygon Layer · Sequence Embedded Wallets',ptxt:`<strong>Smart contract wallet</strong> deployed on Polygon on first login. Gas for all transactions sponsored by Cash App via OMS Paymaster - <strong>user never sees gas fees.</strong>`,bul:['Wallet provisioned silently - wallet address visible in settings','2-of-2 multisig live - both Nitro Enclave keys active','Paymaster active - all gas sponsored, zero cost to user'],scr:'auth_done'},
+{tag:'03 · Top Up',title:'"Deposit USDC"<br>is already in<br><em>the real app.</em>',body:`The real Cash App already has "Deposit USDC" in the Add money list. Aaron taps it and gets a QR code with the Polygon network pre-selected. This is the integration point - OMS handles everything behind that QR.`,plbl:'Polygon Layer · OMS Ramps + Trails',ptxt:`"Deposit USDC" QR screen already exists in Cash App. OMS plugs into the deposit flow - <strong>Trails intent address accepts any stable from any chain</strong>. One address. All networks. All stables.`,bul:['"Deposit USDC" already live in Cash App\'s Add money list','QR screen already shows Polygon as the default network','OMS Trails intent address powers the receive - any chain, any stable'],scr:'add_money'},
+{tag:'03 · Top Up',title:'Network select:<br><em>Polygon already<br>in the list.</em>',body:`When Aaron taps "Deposit USDC", Cash App already shows a "Select payment network" sheet with Polygon listed alongside Solana, Ethereum, and Arbitrum. This is the real UI today.`,plbl:'Polygon Layer · Trails Multi-chain Routing',ptxt:`Polygon is <strong>already a supported network in Cash App's USDC deposit flow</strong>. OMS Trails extends this - same address works across all listed chains, routes optimally to Polygon.`,bul:['Polygon listed alongside Solana, Ethereum, Arbitrum in real UI','Same wallet address resolves across all chains via Trails','OMS holds ~15 direct USDT/USDC mint/burn accounts - best rates'],scr:'select_network'},
+{tag:'03 · Top Up',title:'QR code.<br>Polygon logo.<br><em>Already there.</em>',body:`"Receive USDC" screen with Polygon logo in the QR center, "Polygon" network pill selector, Copy and Share buttons. This is the real Cash App UI. OMS is what powers the wallet and settlement behind it.`,plbl:'Polygon Layer · Self-Custodial Wallets + OMS Settlement',ptxt:`The USDC deposit QR screen is <strong>already in production in Cash App</strong>. The Polygon wallet address shown is what OMS provisions per user. Settlement, custody, and key management are all Polygon OMS.`,bul:['Real Cash App screen - "Receive USDC" with Polygon network pill','QR shows Polygon logo in center - OMS-provisioned wallet address','Copy/Share: standard wallet address flow, no new UX for users'],scr:'deposit_usdc'},
+{tag:'04 · Top Up Sheet',title:'Add money sheet<br>with stablecoin<br><em>option added.</em>',body:`The existing "Add money" sheet already has amount preset buttons, a bank card source, and an "Add" button. The stablecoin wallet option slots in naturally below existing options - one new entry.`,plbl:'Polygon Layer · OMS Ramps',ptxt:`Amount preset grid and "From [card]" already exist. OMS adds a <strong>"From stablecoin wallet"</strong> option - generates a Trails intent address, accepts any stable from any chain, credits dollar balance via webhook.`,bul:['Existing sheet pattern: $10/$25/$50/$100/$200/··· amount grid','Existing "From [card]" source selection pattern unchanged','Stablecoin option uses same "From ›" pattern - one new entry'],scr:'add_money_sheet'},
+{tag:'05 · Send P2P',title:'P2P on the<br>green screen.<br><em>Same experience.</em>',body:`Cash App's iconic green pay screen. Aaron enters $250, taps Pay. The black sheet slides up - "Pay $250 to" with a search field. Identical to today. The settlement rail underneath changes to Polygon. The UX doesn't.`,plbl:'Polygon Layer · Self-Custodial Wallets + Paymaster',ptxt:`Green screen + black sheet is the <strong>exact current Cash App P2P UX</strong>. Settlement route changes from ACH to USDT on Polygon. Gas sponsored by Paymaster. User sees $0 fee, same confirmation.`,bul:['Green screen + numpad: identical to today\'s Cash App','Black sheet "Pay $X to" with search: identical to today\'s','Settlement: USDT on Polygon instead of ACH - invisible to user'],scr:'pay_screen'},
+{tag:'05 · Send P2P',title:'Pay $250 to<br><em>a wallet address.</em>',body:`Aaron can also pay directly to any Polygon wallet address - useful for sending to external wallets. He types or pastes the address. Cash App resolves it to Ethereum/Polygon/Arbitrum options. He picks Polygon.`,plbl:'Polygon Layer · Wallet-to-Wallet Transfer',ptxt:`Sending to a wallet address already works in the real Cash App. OMS extends this - <strong>any EVM address resolves to multiple network options</strong> including Polygon. USDC sent on Polygon, gas sponsored.`,bul:['Already in Cash App: send to wallet address via the pay flow','Network resolution shows Ethereum, Polygon, Arbitrum options','Aaron picks Polygon - USDC lands in recipient wallet instantly'],scr:'pay_to'},
+{tag:'05 · Send P2P',title:'Confirm.<br>USDC on Polygon.<br><em>Send.</em>',body:`Confirmation sheet: "Pay $250 to 0x52d6...42e2 in USDC". Transaction type: USDC on Polygon. Exchange rate: 1 USD : 1 USDC. Cash balance shown as source. "Send" white button. This is the real confirmation UI.`,plbl:'Polygon Layer · USDC Settlement on Polygon',ptxt:`This confirmation screen is <strong>already in the real Cash App</strong> for stablecoin sends. "Transaction type: USDC on Polygon" is shown verbatim. OMS powers the wallet and settlement behind the Send button.`,bul:['"Transaction type: USDC on Polygon" - already shown in real app','1 USD : 1 USDC exchange rate - no slippage, no fee','Cash balance used as source - $0 gas, Paymaster-sponsored'],scr:'send_confirm'},
+{tag:'05 · Send P2P',title:'Stablecoin Payment<br>Sent.<br><em>Notification fires.</em>',body:`"Stablecoin Payment Sent. You paid $250." - the real Cash App push notification that already fires on stablecoin P2P. The recipient's MetaMask receives "Funds received. You received 250 USDC." Cross-app, on-chain.`,plbl:'Polygon Layer · On-Chain Settlement + Webhooks',ptxt:`Both push notifications are real - from the actual Cash App stablecoin demo. Cash App fires "Stablecoin Payment Sent". The recipient's external wallet fires "Funds received". <strong>On-chain settlement in &lt;3 seconds on Polygon.</strong>`,bul:['Push notification: "Stablecoin Payment Sent · You paid $250"','Recipient MetaMask: "Funds received · You received 250 USDC"','Settlement on Polygon PoS: final, irreversible, &lt;3 seconds'],scr:'withdrawal_done'},
+{tag:'06 · Bridge',title:'Top up on Tron.<br>Balance shows $<br><em>on Polygon.</em>',body:`Aaron has USDT on Tron. He deposits via the existing "Deposit USDC" flow. Trails handles the cross-chain routing invisibly - USDT from Tron lands as a USDC balance on Polygon. Aaron sees "$200 deposited".`,plbl:'Polygon Layer · Trails Cross-Chain Intent Routing',ptxt:`<strong>Trails intent addresses</strong> accept any stable on any chain, encode the full routing as a merkle hash, and resolve to Polygon. Tron to Polygon in one user action. No bridge UI shown.`,bul:['USDT on Tron detected at Trails intent address behind the QR','Trails routes: Tron to Polygon via best-route bridge','USDC credited to Aaron\'s Polygon wallet - balance updates'],scr:'bridge'},
+{tag:'07 · Yield',title:'Savings card<br>on the home screen.<br><em>Tap Start.</em>',body:`The "Savings" feature card is already on Cash App's home screen - showing balance and APY. Aaron taps Start. The savings screen appears with rate, balance, and daily earnings. Morpho on Polygon powers it.`,plbl:'Polygon Layer · Morpho + Sequence Wallets',ptxt:`USDC sits in Aaron's <strong>self-custodial Sequence wallet</strong> deployed into Morpho enterprise-grade lending markets. User holds the asset. Auto-compound via smart contract - no manual claim, no lock-up, withdraw anytime.`,bul:['Savings card already on home screen - same pattern as current UI','4.2% APY on idle USDC - Morpho on Polygon','No lock-up, withdraw anytime to Cash App balance'],scr:'yield_home'},
+{tag:'07 · Yield',title:'4.2% APY.<br>Savings goal.<br><em>Daily earnings.</em>',body:`Savings screen: rate badge, large APY number, "USDC via Morpho on Polygon", earned amount, progress bar toward goal, daily earnings in dollars. Looks like a bank savings account. DeFi is invisible.`,plbl:'Polygon Layer · Morpho + Sequence Wallets',ptxt:`USDC deployed into Morpho lending markets via OMS. Auto-compound smart contract. User holds the asset in their <strong>self-custodial Sequence wallet</strong> - Cash App has zero custodial liability.`,bul:['Savings rate, goal progress, daily earnings - standard savings UX','Morpho auto-compounds - no manual claim, no lock-up','$0.143/day on $1,240 - shown as a dollar figure, not a yield rate'],scr:'yield'},
+{tag:'08 · RWAs - Tokenized MMF',title:'Buy MMF<br>in the invest list.<br><em>Tap Start.</em>',body:`The Invest tab already shows Bitcoin, Stocks. "Buy MMF" sits alongside them - one new entry. 5.0% APY, BlackRock BUIDL. Aaron taps Start. The BUIDL detail screen shows rate, position, and a Buy button.`,plbl:'Polygon Layer · RWA Settlement + Wallets',ptxt:`BUIDL tokens live on Polygon. Aaron's <strong>self-custodial Sequence wallet</strong> holds them directly. Cash App surfaces subscribe/redeem behind "Buy MMF" - same invest list pattern as Bitcoin and Stocks.`,bul:['"Buy MMF" sits naturally in existing invest list','BlackRock BUIDL - $1B+ tokenized fund, US T-Bill backed, on Polygon','Aaron holds BUIDL tokens in self-custodial wallet - redeem anytime'],scr:'invest_home'},
+{tag:'08 · RWAs - Tokenized MMF',title:'BlackRock BUIDL.<br>5.0% APY.<br><em>On Polygon.</em>',body:`BUIDL detail screen: fund name, 5.0% 7-day yield, T-Bill backed, daily liquidity. Aaron's position: 500 BUIDL ≈ $500. Accrued yield this month. "Buy BUIDL" green button. Redeem to Cash App balance anytime.`,plbl:'Polygon Layer · RWA Settlement + Wallets',ptxt:`<strong>BUIDL tokens live on Polygon.</strong> Aaron's Sequence wallet holds them directly - self-custodial. Yield accrues daily in BUIDL tokens, <strong>redeemable to USD balance at any time.</strong>`,bul:['BlackRock BUIDL - $1B+ tokenized MMF, US T-Bill backed','5.0% 7-day yield · daily liquidity · $1 minimum','Self-custodial - Aaron holds BUIDL directly, Cash App has no custody'],scr:'buidl'},
+{tag:'09 · Personal Loan',title:'Borrow against<br>savings. Slider.<br><em>No credit check.</em>',body:`Aaron needs $300. Borrow screen: amount in large type, "Against your $500 USDC savings", slider from $50–$500. Receipt shows collateral ratio, interest rate, flexible repayment, no credit check. "Borrow $300" green button.`,plbl:'Polygon Layer · Morpho + Sequence Wallets',ptxt:`Collateral (USDC) stays in Aaron's <strong>self-custodial Sequence wallet</strong>. Morpho executes the borrow on Polygon. Cash App wraps it behind a slider and a Borrow button - <strong>no on-chain transaction visible to user.</strong>`,bul:['Slider UX: $50–$500, Aaron drags to $300','Collateralized against USDC savings - no underwriting, no credit score','6.8% APR variable - no fixed repayment, shown as dollar cost'],scr:'loan'},
+{tag:'10 · Virtual Account',title:'A real bank<br>account.<br><em>Backed by stables.</em>',body:`Aaron provisions a US virtual account - routing number, account number. Receive ACH, Fedwire, SWIFT, RTP. Fiat inflows convert to USDC on Polygon and credit his dollar balance.`,plbl:'Polygon Layer · OMS Virtual Accounts + Cross River Bank',ptxt:`Virtual accounts via <strong>OMS + Cross River Bank</strong>. Inflows convert to USDC on Polygon, credit the Sequence wallet.`,bul:['Individual US virtual account per user - dedicated routing + account number','Receive ACH, Fedwire, SWIFT, RTP','Inflows auto-convert to USDC on Polygon, credit dollar balance'],scr:'virt_account'},
+{tag:'11 · Debit Card',title:'Spend USDC<br>anywhere Visa<br><em>is accepted.</em>',body:`Cash App Card backed by stablecoin balance. Smart contract enforces spend limits. Issued by Galileo, Rain or Highnote as Visa principal - the only service outside Polygon's stack.`,plbl:'Polygon Layer · Wallets + Settlement (card issuance: third party partner)',ptxt:`Card auth = <strong>smart contract pull from Aaron's Sequence wallet</strong>. Spend limits on-chain. Third party card issuer handles Visa scheme. <strong>Polygon: wallet, balance, settlement rail.</strong>`,bul:['Issued by third party card issuer - Galileo, Rain, or Highnote','Smart contract enforces $500 daily spend limit on-chain','USDC held until settlement - Aaron earns yield between spend and settle'],scr:'card'},
+{tag:'12 · Key Management',title:'Self-custody.<br>No seed phrase.<br><em>No exposure.</em>',body:`Security settings look identical to today's Cash App - Security lock, PIN, Passkeys, Account recovery. Behind this familiar UI sits a 2-of-2 multisig with both keys in separate AWS Nitro Enclaves.`,plbl:'Polygon Layer · Sequence Embedded Wallets - Key Architecture',ptxt:`<strong>Key 1: Auth Nitro Enclave. Key 2: Guard Nitro Enclave.</strong> Neither combined, neither exposed. Third party KMS owner audits independently.`,bul:['Security lock, PIN, Passkeys: identical to current Cash App security screen','Wallet protection section: sign-in method + account recovery added','Cash App support holds zero keys - cannot be compelled to unlock wallets'],scr:'security'},
+{tag:'Recap · Full Stack',title:'One stack.<br><em>Every service.</em>',body:`Polygon OMS powers every financial service in Cash App's stablecoin stack. Single API. No fragmentation. Stablecoins completely abstracted from user UX.`,plbl:'Polygon Layer · Complete OMS Summary',ptxt:`<strong>Auth</strong> (Sequence wallets) · <strong>Top-up + ramps</strong> (OMS + Trails) · <strong>Send P2P</strong> (wallets + paymaster) · <strong>Bridge</strong> (Trails) · <strong>Yield + loans</strong> (Morpho) · <strong>Invest e.g. MMF</strong> (RWA settlement) · <strong>Virtual accounts</strong> (OMS + CRB) · <strong>Key management</strong> (Sequence). Card issuance: third party partner.`,bul:['<strong>All 9 services</strong> on Polygon OMS - single API integration','Stablecoins completely abstracted from user UX - dollar amounts everywhere'],scr:'recap'}
+];
+
+const N=STEPS.length;
+function buildDots(){const el=document.getElementById('dots');el.innerHTML='';STEPS.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i<cur?' done':'')+(i===cur?' active':'');d.onclick=()=>{cur=i;render();};el.appendChild(d);});}
+function render(){
+  const s=STEPS[cur];
+  document.getElementById('stagx').textContent=s.tag;
+  document.getElementById('stitle').innerHTML=s.title;
+  document.getElementById('nbody').innerHTML=s.body;
+  document.getElementById('plbl').textContent=s.plbl;
+  document.getElementById('ptxt').innerHTML=s.ptxt;
+  document.getElementById('sbul').innerHTML=s.bul.map(b=>`<li>${b}</li>`).join('');
+  document.getElementById('pbody').innerHTML=SCR[s.scr]();
+  document.getElementById('pbtn').disabled=cur===0;
+  document.getElementById('nbtn').disabled=cur===N-1;
+  document.getElementById('nbtn').textContent=cur===N-1?'Done':'Next →';
+  buildDots();
+  if(s.scr==='bridge')setTimeout(()=>animSteps('bridge-steps'),200);
+}
+function animSteps(id){
+  const c=document.getElementById(id);if(!c)return;
+  const items=c.querySelectorAll('.pstep');
+  items.forEach((item,i)=>{setTimeout(()=>{if(i>0){items[i-1].classList.remove('active');items[i-1].classList.add('done');}item.classList.add('active');},i*750);});
+  setTimeout(()=>{items[items.length-1].classList.remove('active');items[items.length-1].classList.add('done');},items.length*750);
+}
+document.getElementById('nbtn').addEventListener('click',()=>{if(cur<N-1){cur++;render();window.scrollTo({top:0,behavior:'smooth'});}});
+document.getElementById('pbtn').addEventListener('click',()=>{if(cur>0){cur--;render();}});
+document.getElementById('rbtn').addEventListener('click',()=>{cur=0;render();window.scrollTo({top:0,behavior:'smooth'});});
+render();
+</script>
+</body>
+</html>
